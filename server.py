@@ -157,7 +157,7 @@ class Device_Set_Image(BaseHandler):
             return self.send_response(status='fail', message='Unauthorized', status_code=401)
 
         # Get image name from query parameter
-        image_name = self.get_argument('image', None)
+        image_name = self.get_argument('imgfile', None)
         if not image_name:
             return self.send_response(status='fail', message='Image name not provided', status_code=400)
 
