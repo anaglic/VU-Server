@@ -149,6 +149,30 @@ class Device_Backlight_Handler(BaseHandler):
         return self.send_response(status='fail', message='Invalid dial_uid or device is offline.', status_code=503)
 
 class Device_Set_Image(BaseHandler):
+    def get(self, dial_uid):
+        logger.debug(f"Request:SET_IMAGE - Device:{dial_uid}")
+
+        # Validate API key
+        if not self.is_valid_api_key():
+            return self.send_response(status='fail', message='Unauthorized', status_code=401)
+
+        # Get image name from query parameter
+        image_name = self.get_argument('image', None)
+        if not image_name:
+            return self.send_response(status='fail', message='Image name not provided', status_code=400)
+
+        # Construct the full path to the image file
+        image_path = os.path.join(WEB_ROOT, 'images', image_name)
+
+        # Check if the file exists
+        if not os.path.exists(image_path):
+            return self.send_response(status='fail', message=f'Image {image_name} not found', status_code=404)
+
+        # Set the image
+        if self.handler.dial_set_image(dial_uid=dial_uid, image_file=image_path):
+            return self.send_response(status='ok', message='Image updated', status_code=200)
+        return self.send_response(status='fail', message='Invalid dial_uid or device is offline.', status_code=503)
+
     def post(self, dial_uid):
         get_force = self.get_argument('force', False)
 
